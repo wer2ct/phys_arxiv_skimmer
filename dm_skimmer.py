@@ -64,8 +64,9 @@ def url_merge(tag): #function takes tag and returns a link to the new page
 
 def main(): #main function
     tags = ['hep-ex','hep-th'] #declare the tags to parse
-    with open('articles.csv','a') as file: #opening existing output file to append
+    with open('articles_dm.csv','a') as file: #opening existing output file to append
         writer = csv.writer(file)
+        writer.writerow(["Date","Section","Title","Score","URL"])
         for tag in tags:
             article_returns = ((skimmer((url_merge(tag)),tag))) #calling skimmer for every tag
             for i in range(len(article_returns)): #writing results
