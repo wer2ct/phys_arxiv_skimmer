@@ -1,31 +1,35 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+from datetime import date
 
-def skimmer(address,tag):
-    print("-------------------------------------")
-    print(f'Fetching relevant entries from {tag}:')
-    
+def skimmer(address,tag): #function takes web address and arxiv tag, currently works best for 'new' pages 
+
+    today=date.today()
+
     #grabbing webpage
     page = requests.get(address)
 
-    #creating parsable object
+    #creating parsable object in BeautifulSoup
     soup = BeautifulSoup(page.text, 'html.parser')
-
+    
+    #Finding abstracts, titles, and links on a given arxiv page
     abstracts = soup.find_all('p', class_ = "mathjax")
     titles = soup.find_all('div',class_="list-title mathjax")
-
     links = soup.css.select('a[id^="pdf-"]')
 
-    
+    #creating lists for abstracts, titles, and links
     abstracts_list = []
     titles_list = []
     links_list = []
 
+    #weighted keyword list. First entry in list is keyword (capitalization doesn't matter), second is weight
     keyword_list = [['dark',10],['matter',10]]
 
+    #List that will store the results
     results_list = []
 
+    #Parsing to create a filled results list
     for abstract in abstracts:
         abstracts_list.append(str(abstract.contents[0]))
 
@@ -51,26 +55,32 @@ def skimmer(address,tag):
                 if word.lower() == keyword[0].lower():
                     score += 1*keyword[1]
         if score >= 20:
-            print(f'\n{titles_list[i]} \nscore  = {score} \nlink = {links_list[i]}\n')
-            results_list.append([titles_list[i],links_list[i],score])
+            results_list.append([today,tag,titles_list[i],score,links_list[i]])
 
-    #print(titles_list)
     return(results_list)
 
-def url_merge(tag):
+def url_merge(tag): #function takes tag and returns a link to the new page
     return('https://arxiv.org/list/'+ f'{tag}/new')
 
-def main():
-    tags = ['hep-ex', 'hep-th']
-    for tag in tags:
-        print(skimmer((url_merge(tag)),tag))
-        
+def main(): #main function
+    tags = ['hep-ex','hep-th'] #declare the tags to parse
+    with open('articles.csv','a') as file: #opening existing output file to append
+        writer = csv.writer(file)
+        for tag in tags:
+            article_returns = ((skimmer((url_merge(tag)),tag))) #calling skimmer for every tag
+            for i in range(len(article_returns)): #writing results
+                writer.writerow(article_returns[i])
 
 main()
 
 
     
     
+
+
+ 
+
+
 
 
  
