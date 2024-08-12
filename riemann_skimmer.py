@@ -22,15 +22,19 @@ def skimmer(address,tag):
     titles_list = []
     links_list = []
 
-    keyword_list = [['Riemann',10],['hypothesis',10]]
-    
+    keyword_list = [['Riemann',10],['Hypothesis',10]]
+
+    results_list = []
+
     for abstract in abstracts:
-        #print(abstract.contents[0])
         abstracts_list.append(str(abstract.contents[0]))
 
     for title in titles:
-        #print(title.contents[1])
         titles_list.append(str(title.contents[1]))
+        
+    for i in range(len(titles_list)):
+        titles_list[i] = titles_list[i].strip()
+    
     for link in links:
         links_list.append(('https://arxiv.org' + str(link).split('"')[3]))
 
@@ -41,16 +45,17 @@ def skimmer(address,tag):
         del abs_word_list[(len(abs_word_list) - 8):len(abs_word_list)]
         del title_word_list[0:10]
         del title_word_list[(len(title_word_list) - 8):len(title_word_list)]
-        for i in range(len(titles_list)):
-            titles_list[i] = titles_list[i].strip()
         score = 0
         for keyword in keyword_list:
             for word in abs_word_list:
                 if word.lower() == keyword[0].lower():
                     score += 1*keyword[1]
-        if True == True: #placeholder for additional filter
-            if score >= 20:
-                print(f'\n{titles_list[i]} \nscore  = {score} \nlink = {links_list[i]}\n')
+        if score >= 20:
+            print(f'\n{titles_list[i]} \nscore  = {score} \nlink = {links_list[i]}\n')
+            results_list.append([titles_list[i],links_list[i],score])
+
+    #print(titles_list)
+    return(results_list)
 
 def url_merge(tag):
     return('https://arxiv.org/list/'+ f'{tag}/new')
@@ -58,7 +63,8 @@ def url_merge(tag):
 def main():
     tags = ['math']
     for tag in tags:
-        skimmer((url_merge(tag)),tag)
+        print(skimmer((url_merge(tag)),tag))
+        
 
 main()
 
