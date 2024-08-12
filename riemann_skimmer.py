@@ -64,7 +64,7 @@ def url_merge(tag): #function takes tag and returns a link to the new page
 
 def main(): #main function
     tags = ['math'] #declare the tags to parse
-    with open('articles.csv','a') as file: #opening existing output file to append
+    with open('articles_riemann.csv','a') as file: #opening existing output file to append
         writer = csv.writer(file)
         for tag in tags:
             article_returns = ((skimmer((url_merge(tag)),tag))) #calling skimmer for every tag
